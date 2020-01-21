@@ -1,6 +1,9 @@
 # soundscapeToolbox
 scripts, functions, and GUIs to aid in processing and analyzing underwater soundscape data
 
+Contributors: D. Bohnenstiehl, S. Ricci, A. Lillis
+NC State University
+
 ## General functions(f)/scripts(s)
 The following functions/scripts can be used to process and perform basic analysis on acoustic data:
 * readST (f)
