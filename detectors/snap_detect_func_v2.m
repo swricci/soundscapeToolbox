@@ -50,7 +50,7 @@ elseif fs == 48000
     nPoints = 50;
 end
 
-kern=cat(2,zeros(1,100), K.kern);  % zero pad from the left by 100 points
+kern=cat(2,zeros(1,nPoints), K.kern);  % zero pad from the left by 100 points
 %pk=pk+100; klen=klen+100;  % adjust peak position and length of kernel 
 pk=K.pk+nPoints; klen=K.klen+nPoints;
 
@@ -66,11 +66,11 @@ cc=cc(a); lg=lg(a);  % only want positive lags
 % normalize the cc ---> ncc 
 ncc=nan(1,length(cc)-klen);  % preallocate the normalized cc matric 
 if use_par==1  % process in parallel 
-    PP=parpool; 
+    %PP=parpool; 
     parfor i=1:length(cc)-klen 
     ncc(i)=cc(i)./(sqrt(sum(kern.^2))*sqrt(sum(penv(i:i+klen-1).^2))); 
     end
-    delete(PP); 
+    %delete(PP); 
 else   % use_par = 0 
     for i=1:length(cc)-klen 
     ncc(i)=cc(i)./(sqrt(sum(kern.^2))*sqrt(sum(penv(i:i+klen-1).^2))); 
@@ -85,7 +85,13 @@ ncc=cat(2,nan(1,pk-1),ncc);  % make first pk number of points in ncc NaN
 
 % peak detection 
 % CHANGE THIS!!! if 96, 48 play with minpeakdistance (35 for 48?)
-[det_score,det_sam] = findpeaks(ncc,'MINPEAKHEIGHT',min_det_score,'MINPEAKDISTANCE',75); 
+if fs == 96000
+    min_pk_dist = 75;
+else if fs == 48000
+        min_pk_dist = 35;
+    end
+end
+[det_score,det_sam] = findpeaks(ncc,'MINPEAKHEIGHT',min_det_score,'MINPEAKDISTANCE',min_pk_dist); 
 
 det_amp=nan(size(det_sam));  % find the amplitde of the snap 
 for i=1:length(det_sam)
